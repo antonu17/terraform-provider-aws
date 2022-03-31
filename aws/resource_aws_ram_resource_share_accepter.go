@@ -128,18 +128,7 @@ func resourceAwsRamResourceShareAccepterRead(d *schema.ResourceData, meta interf
 	accountID := meta.(*AWSClient).accountid
 	conn := meta.(*AWSClient).ramconn
 
-	invitation, err := finder.ResourceShareInvitationByResourceShareArnAndStatus(conn, d.Id(), ram.ResourceShareInvitationStatusAccepted)
-
-	if err != nil && !tfawserr.ErrCodeEquals(err, ram.ErrCodeResourceShareInvitationArnNotFoundException) {
-		return fmt.Errorf("error retrieving invitation for resource share %s: %w", d.Id(), err)
-	}
-
-	if invitation != nil {
-		d.Set("invitation_arn", invitation.ResourceShareInvitationArn)
-		d.Set("receiver_account_id", invitation.ReceiverAccountId)
-	} else {
-		d.Set("receiver_account_id", accountID)
-	}
+	d.Set("receiver_account_id", accountID)
 
 	resourceShare, err := finder.ResourceShareOwnerOtherAccountsByArn(conn, d.Id())
 
